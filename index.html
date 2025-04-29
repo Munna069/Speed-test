@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>FAST Speed Test</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #ffffff;
+      text-align: center;
+      padding: 60px 20px;
+    }
+
+    #logo {
+      font-size: 60px;
+      font-weight: bold;
+      color: #e30613;
+    }
+
+    #speed {
+      font-size: 90px;
+      font-weight: bold;
+      margin-top: 20px;
+      color: #222;
+    }
+
+    #unit {
+      font-size: 28px;
+      margin-left: 10px;
+      color: #555;
+    }
+
+    #refresh {
+      font-size: 32px;
+      color: green;
+      cursor: pointer;
+      margin-left: 15px;
+    }
+
+    #resultText {
+      font-size: 20px;
+      color: #555;
+      margin-top: 30px;
+    }
+
+    #footer {
+      margin-top: 100px;
+      font-size: 16px;
+      color: #777;
+    }
+
+    .social-links {
+      margin-top: 40px;
+    }
+
+    .social-links a {
+      margin: 0 20px;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .social-links img {
+      width: 55px;
+      height: 55px;
+      vertical-align: middle;
+      transition: all 0.3s ease-in-out;
+    }
+
+    .social-links img:hover {
+      transform: scale(1.2);
+    }
+
+    .fade {
+      transition: all 0.3s ease-in-out;
+    }
+  </style>
+</head>
+<body>
+  <div id="logo">spread test SKM</div>
+
+  <div>
+    <span id="speed" class="fade">--</span>
+    <span id="unit">Mbps</span>
+    <span id="refresh" onclick="startSpeedTest()">&#x21bb;</span>
+  </div>
+
+  <div id="resultText">Checking your internet speed...</div>
+
+  <div id="footer">
+    <div class="social-links">
+      <a href="https://facebook.com" target="_blank">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/5/51/Facebook_f_logo_%282019%29.svg" alt="Facebook" />
+      </a>
+      <a href="https://youtube.com" target="_blank">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/b/b8/YouTube_Logo_2017.svg" alt="YouTube" />
+      </a>
+      <a href="https://www.tiktok.com" target="_blank">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/a/a9/TikTok_logo_2018.svg" alt="TikTok" />
+      </a>
+      <a href="https://wa.me/+8801604677795" target="_blank">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp" />
+      </a>
+    </div>
+  </div>
+
+  <script>
+    function animateSpeed(finalSpeed) {
+      let current = 0;
+      const increment = Math.max(0.2, finalSpeed / 100);
+      const interval = setInterval(() => {
+        current += increment;
+        if (current >= finalSpeed) {
+          current = finalSpeed;
+          clearInterval(interval);
+        }
+        document.getElementById('speed').innerText = current.toFixed(2);
+      }, 30);
+    }
+
+    function startSpeedTest() {
+      document.getElementById('resultText').innerText = 'Testing...';
+      document.getElementById('speed').innerText = '--';
+
+      const imageAddr = "https://speed.hetzner.de/10MB.bin";
+      const startTime = new Date().getTime();
+
+      fetch(imageAddr + '?nocache=' + Math.random())
+        .then(response => {
+          if (!response.ok) throw new Error("Network error");
+          return response.blob();
+        })
+        .then(blob => {
+          const endTime = new Date().getTime();
+          const duration = (endTime - startTime) / 1000;
+          const bitsLoaded = blob.size * 8;
+          const speedMbps = (bitsLoaded / duration / 1024 / 1024).toFixed(2);
+          animateSpeed(Number(speedMbps));
+          document.getElementById('resultText').innerText = `Your speed is ${speedMbps} Mbps`;
+        })
+        .catch(() => {
+          document.getElementById('speed').innerText = '0';
+          document.getElementById('resultText').innerText = 'Speed test failed. Please check your connection.';
+        });
+    }
+
+    startSpeedTest();
+  </script>
+</body>
+</html>
